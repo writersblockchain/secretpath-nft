@@ -15,56 +15,24 @@ pub struct InstantiateMsg {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    Input { message: PrivContractHandleMsg }
+    Input { message: PrivContractHandleMsg },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct InputStoreMsg {
-    // Key of the StorageItem  
-    pub key: String,
-    // Value of the StorageItem  
-    pub value: String,
-    // ViewingKey of the StorageItem to unlock the value
-    pub viewing_key: String,
-    // Address who is allowed to unlock the StorageItem with a permit
-    pub addresses: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct ResponseStoreMsg {
-    // Key of the StorageItem  
-    pub key: String,
-    // response message
-    pub message: String
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct InputRetrieveMsg {
-    // Key of the StorageItem  
-    pub key: String,
-    // ViewingKey of the StorageItem to unlock the value
-    pub viewing_key: String
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct ResponseRetrieveMsg {
-    // Key of the StorageItem  
-    pub key: String,
-    // value of the StorageItem  
-    pub value: String,
-    // response message
-    pub message: String
+pub struct ResponseMsg {
+    pub message: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    RetrieveValue {key: String, viewing_key: String}
+    RetrieveMetadata {},
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct QueryResponse {
-    pub message: String,
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct ResponseMetadataRetrieveMsg {
+    pub owner: String,
+    pub metadata: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
