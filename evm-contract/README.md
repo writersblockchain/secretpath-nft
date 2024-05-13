@@ -1,5 +1,7 @@
-0xdeb32c0084749660ee8dA9844EAE58145d1c3B3d
+0x81bcdfA7dC1aE0033def82D4717472069fC7a540
 
 npx hardhat run scripts/deployNFT.js --network sepolia
 
 npx hardhat run scripts/mint.js --network sepolia
+
+npx hardhat run scripts/queryNFT.js --network sepolia

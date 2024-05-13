@@ -8,7 +8,7 @@ async function mint() {
   const secretNFT = await SecretNFT.attach(nftAddress);
 
   const uri =
-    "https://drive.google.com/file/d/11V41wMsSpttyqWNUmI0ZhMX3pjQZaLwF/view?usp=sharing";
+    "1GgWb9yMciX_ot8euDub0L2CDNMtxPRng";
 
   const tx = await secretNFT.safeMint(
     "0x49e01eb08bBF0696Ed0df8cD894906f7Da635929",
