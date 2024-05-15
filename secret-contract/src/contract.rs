@@ -1,8 +1,8 @@
 use crate::{
     msg::{
-        ExecuteMsg, GatewayMsg, InstantiateMsg, QueryMsg, ResponseMetadataRetrieveMsg, ResponseMsg,
+        ExecuteMsg, GatewayMsg, InstantiateMsg, MetadataStoreMsg, QueryMsg, ResponseMetadataRetrieveMsg, ResponseMsg
     },
-    state::{ConfidentialMetadata, Input, State, CONFIDENTIAL_METADATA, CONFIG},
+    state::{ConfidentialMetadata, State, CONFIDENTIAL_METADATA, CONFIG},
 };
 use cosmwasm_std::{
     entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
@@ -91,15 +91,22 @@ fn execute_store_confidential_metadata(
 ) -> StdResult<Response> {
     let config = CONFIG.load(deps.storage)?;
 
-    let input: Input = serde_json_wasm::from_str(&input_values)
-        .map_err(|err| StdError::generic_err(err.to_string()))?;
+    let input: MetadataStoreMsg = serde_json_wasm::from_str(&input_values)
+    .map_err(|err| StdError::generic_err(err.to_string()))?;
 
     let owner = input.owner;
     let metadata = input.metadata;
+    let token_id = input
+    .token_id
+    .parse::<u64>()
+    .map_err(|err| StdError::generic_err(format!("Invalid index: {}", err)))?;
+    let private_metadata = input.private_metadata;
 
     let confidential_metadata = ConfidentialMetadata {
         owner: owner,
         metadata: metadata,
+        token_id: token_id,
+        private_metadata: private_metadata,
     };
 
     CONFIDENTIAL_METADATA.insert(deps.storage, &true, &confidential_metadata)?;
@@ -139,5 +146,7 @@ fn retrieve_metadata(deps: Deps) -> StdResult<Binary> {
     to_binary(&ResponseMetadataRetrieveMsg {
         owner: value.owner,
         metadata: value.metadata,
+        token_id: value.token_id,
+        private_metadata: value.private_metadata,
     })
 }

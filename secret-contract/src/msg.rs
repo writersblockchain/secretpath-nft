@@ -19,6 +19,14 @@ pub enum ExecuteMsg {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct MetadataStoreMsg {
+    pub owner: String,
+    pub metadata: String,
+    pub token_id: String,
+    pub private_metadata: String, 
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct ResponseMsg {
     pub message: String,
 }
@@ -33,6 +41,8 @@ pub enum QueryMsg {
 pub struct ResponseMetadataRetrieveMsg {
     pub owner: String,
     pub metadata: String,
+    pub token_id: u64,
+    pub private_metadata: String, 
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

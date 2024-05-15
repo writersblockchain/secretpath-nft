@@ -43,9 +43,9 @@ let encrypt_tx = async () => {
   } = modules.belt;
 
   const publicClientAddress = "0x3879E146140b627a5C858a08e507B171D9E43139";
-  const routing_contract = "secret1pfg825wflcl40dqpd3yj96zhevnlxkh35hedks";
+  const routing_contract = process.env.SECRET_CONTRACT;
   const routing_code_hash =
-    "fc5007efb0580334be20142a3011f34101be681eaa2fe277ee429f4d76107876";
+  process.env.SECRET_CODE_HASH;
   const iface = new ethers.utils.Interface(abi);
 
   const privateKey = process.env.PRIVATE_KEY;
@@ -70,20 +70,22 @@ let encrypt_tx = async () => {
     ecdh(userPrivateKeyBytes, gatewayPublicKeyBytes)
   );
 
-  const myAddress = "";
-  const key = "";
-  const value = "";
-  const viewing_key = "";
+  const owner = my_wallet.address;
+  const metadata = "https://drive.google.com/file/d/1oMSt6FtEqb6tsbbymvXYjxbqbDijtBA9";
+  const token_id = "0";
+  const private_metadata = "this is my private metadata!";
+  const myAddress = my_wallet.address;
   const callback_gas_limit = 300000;
 
   //the function name of the function that is called on the private contract
-  const handle = "store_value";
+  const handle = "execute_store_confidential_metadata";
 
   const data = JSON.stringify({
-    key: key,
-    value: value,
-    viewing_key: viewing_key,
-    addresses: [myAddress],
+   owner: owner,
+    metadata: metadata,
+    token_id: token_id,
+    private_metadata: private_metadata, 
+
   });
 
   const callbackAddress = publicClientAddress.toLowerCase();
@@ -210,3 +212,6 @@ let encrypt_tx = async () => {
 };
 
 encrypt_tx();
+
+
+module.exports = { encrypt_tx };

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -24,23 +23,39 @@ contract SecretNFT is ERC721, ERC721URIStorage, Ownable {
         _setTokenURI(tokenId, uri);
     }
 
-    // The following functions are overrides required by Solidity.
+    function tokensOfOwner(address owner) external view returns (uint256[] memory) {
+        uint256 tokenCount = balanceOf(owner);
+        uint256[] memory tokenIds = new uint256[](tokenCount);
+        if (tokenCount == 0) {
+            return tokenIds; // Return an empty array if no tokens
+        } else {
+            uint256 index = 0;
+            for (uint256 i = 0; i < _nextTokenId; i++) {
+                try this.ownerOf(i) {
+                    if (ownerOf(i) == owner) {
+                        tokenIds[index] = i;
+                        index++;
+                    }
+                } catch {
+                    // This catch block is intentionally left empty.
+                    // If ownerOf(i) reverts, then the token does not exist, so do nothing.
+                }
+            }
+            // Resize the array to remove unused elements
+            uint256[] memory actualTokenIds = new uint256[](index);
+            for (uint256 j = 0; j < index; j++) {
+                actualTokenIds[j] = tokenIds[j];
+            }
+            return actualTokenIds;
+        }
+    }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
+    // The following functions are overrides required by Solidity.
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

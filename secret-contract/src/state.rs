@@ -12,16 +12,13 @@ pub struct State {
     pub gateway_hash: String,
     pub gateway_key: Binary,
 }
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct Input {
-    pub owner: String,
-    pub metadata: String,
-}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct ConfidentialMetadata {
     pub owner: String,
     pub metadata: String,
+    pub token_id: u64,
+    pub private_metadata: String, 
 }
 
 pub static CONFIDENTIAL_METADATA: Keymap<bool, ConfidentialMetadata> =
