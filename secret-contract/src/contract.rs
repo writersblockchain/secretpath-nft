@@ -71,7 +71,7 @@ fn try_handle(
     // determine which function to call based on the included handle
     let handle = msg.handle.as_str();
     match handle {
-        "execute_sttore_confidential_metadata" => execute_store_confidential_metadata(
+        "execute_store_confidential_metadata" => execute_store_confidential_metadata(
             deps,
             env,
             msg.input_values,

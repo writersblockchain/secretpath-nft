@@ -6,6 +6,11 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
-    "dotenv": "^16.4.5"
+    "@blake.regalia/belt": "^0.31.1",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@solar-republic/cosmos-grpc": "^0.14.2",
+    "@solar-republic/neutrino": "^1.0.8",
+    "dotenv": "^16.4.5",
+    "secure-random": "^1.1.2"
   }
 }

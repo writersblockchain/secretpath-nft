@@ -24,5 +24,5 @@ async function queryTokenURI(tokenId) {
 }
 
 // Example usage:
-const tokenId = 0; // Replace with the tokenId you want to query
+const tokenId = 1; // Replace with the tokenId you want to query
 queryTokenURI(tokenId).catch(console.error);

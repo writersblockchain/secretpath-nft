@@ -4,4 +4,6 @@ npx hardhat run scripts/deployNFT.js --network sepolia
 
 npx hardhat run scripts/mint.js --network sepolia
 
+npx hardhat run scripts/transfer.js --network sepolia
+
 npx hardhat run scripts/queryNFT.js --network sepolia
