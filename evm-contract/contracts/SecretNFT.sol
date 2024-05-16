@@ -14,7 +14,7 @@ contract SecretNFT is ERC721, ERC721URIStorage, Ownable {
     {}
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://drive.google.com/file/d/";
+        return "";
     }
 
     function safeMint(address to, string memory uri) public onlyOwner {

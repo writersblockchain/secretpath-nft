@@ -21,5 +21,5 @@ pub struct ConfidentialMetadata {
     pub private_metadata: String, 
 }
 
-pub static CONFIDENTIAL_METADATA: Keymap<bool, ConfidentialMetadata> =
+pub static CONFIDENTIAL_METADATA: Keymap<u64, ConfidentialMetadata> =
     Keymap::new(b"confidential_metadata");

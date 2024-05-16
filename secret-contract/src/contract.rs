@@ -46,7 +46,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
 #[entry_point]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     let response = match msg {
-        QueryMsg::RetrieveMetadata {} => retrieve_metadata(deps),
+        QueryMsg::RetrieveMetadata {token_id} => retrieve_metadata(deps, token_id),
     };
     pad_query_result(response, BLOCK_SIZE)
 }
@@ -109,7 +109,7 @@ fn execute_store_confidential_metadata(
         private_metadata: private_metadata,
     };
 
-    CONFIDENTIAL_METADATA.insert(deps.storage, &true, &confidential_metadata)?;
+    CONFIDENTIAL_METADATA.insert(deps.storage, &token_id, &confidential_metadata)?;
 
     let data = ResponseMsg {
         message: "Metadata stored successfully".to_string(),
@@ -138,9 +138,9 @@ fn execute_store_confidential_metadata(
         .add_attribute("status", "confidential metadata storage complete!"))
 }
 
-fn retrieve_metadata(deps: Deps) -> StdResult<Binary> {
+fn retrieve_metadata(deps: Deps, token_id:u64) -> StdResult<Binary> {
     let value = CONFIDENTIAL_METADATA
-        .get(deps.storage, &true)
+        .get(deps.storage, &token_id)
         .ok_or_else(|| StdError::generic_err("Value not found"))?;
 
     to_binary(&ResponseMetadataRetrieveMsg {
