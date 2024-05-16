@@ -11,7 +11,7 @@ let query = async () => {
   const query_tx = await secretjs.query.compute.queryContract({
     contract_address: process.env.SECRET_ADDRESS,
     code_hash: process.env.CODE_HASH,
-    query: { retrieve_metadata: {} },
+    query: { retrieve_metadata: {token_id: 0} },
   })
   console.log(query_tx)
 }

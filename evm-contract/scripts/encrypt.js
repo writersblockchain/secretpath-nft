@@ -71,7 +71,7 @@ let encrypt_tx = async () => {
   );
 
   const owner = my_wallet.address;
-  const metadata = "https://drive.google.com/file/d/1oMSt6FtEqb6tsbbymvXYjxbqbDijtBA9";
+  const metadata = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-QnHKcPgTFMRerFbd1KiR9a7j/user-Kf3fm6UoibgNfaGMcqTXGocw/img-foFfln0x7TaKPTQeDupLfHsA.png?st=2024-05-16T16%3A41%3A11Z&se=2024-05-16T18%3A41%3A11Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-05-16T15%3A29%3A26Z&ske=2024-05-17T15%3A29%3A26Z&sks=b&skv=2021-08-06&sig=gkB6YsAX/txgDlSbrOzDMiYCXB5m%2ByLC8kixK0lm9uo%3D";
   const token_id = "0";
   const private_metadata = "this is my private metadata!";
   const myAddress = my_wallet.address;
