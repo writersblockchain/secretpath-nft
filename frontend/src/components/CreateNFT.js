@@ -7,7 +7,7 @@ export default function CreateNFT() {
   const [description, setDescription] = useState("");
   const [secretMessage, setSecretMessage] = useState("");
 
-  // const openai = new OpenAI({ apiKey: process.env.REACT_APP_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+
 
   let generateImage = async () => {
     const response = await openai.images.generate({
