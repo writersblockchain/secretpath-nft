@@ -95,7 +95,7 @@ fn execute_store_confidential_metadata(
     .map_err(|err| StdError::generic_err(err.to_string()))?;
 
     let owner = input.owner;
-    let metadata = input.metadata;
+    let uri = input.uri;
     let token_id = input
     .token_id
     .parse::<u64>()
@@ -104,8 +104,8 @@ fn execute_store_confidential_metadata(
 
     let confidential_metadata = ConfidentialMetadata {
         owner: owner,
-        metadata: metadata,
         token_id: token_id,
+        uri: uri,
         private_metadata: private_metadata,
     };
 
@@ -145,8 +145,8 @@ fn retrieve_metadata(deps: Deps, token_id:u64) -> StdResult<Binary> {
 
     to_binary(&ResponseMetadataRetrieveMsg {
         owner: value.owner,
-        metadata: value.metadata,
         token_id: value.token_id,
+        uri: value.uri,
         private_metadata: value.private_metadata,
     })
 }

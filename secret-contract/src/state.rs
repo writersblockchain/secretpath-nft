@@ -16,8 +16,8 @@ pub struct State {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct ConfidentialMetadata {
     pub owner: String,
-    pub metadata: String,
     pub token_id: u64,
+    pub uri: String,
     pub private_metadata: String, 
 }
 
