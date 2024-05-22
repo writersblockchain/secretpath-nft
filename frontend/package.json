@@ -6,6 +6,7 @@
     "@blake.regalia/belt": "^0.35.1",
     "@solar-republic/cosmos-grpc": "^0.15.3",
     "@solar-republic/neutrino": "^1.2.4",
+    "@splinetool/react-spline": "^2.2.6",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
