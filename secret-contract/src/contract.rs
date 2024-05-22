@@ -1,6 +1,6 @@
 use crate::{
     msg::{
-        ExecuteMsg, GatewayMsg, InstantiateMsg, MetadataStoreMsg, QueryMsg, ResponseMetadataRetrieveMsg, ResponseMsg
+        ExecuteMsg, GatewayMsg, InstantiateMsg, MetadataStoreMsg, QueryMsg, ResponseMetadataRetrieveMsg, ResponseMsg, ResponsePrivateMetadataRetrieveMsg
     },
     state::{ConfidentialMetadata, State, CONFIDENTIAL_METADATA, CONFIG},
 };
@@ -47,6 +47,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     let response = match msg {
         QueryMsg::RetrieveMetadata {token_id} => retrieve_metadata(deps, token_id),
+        QueryMsg::RetrievePrivateMetadata {token_id, password } => retrieve_private_metadata(deps, token_id, password)
     };
     pad_query_result(response, BLOCK_SIZE)
 }
@@ -101,12 +102,14 @@ fn execute_store_confidential_metadata(
     .parse::<u64>()
     .map_err(|err| StdError::generic_err(format!("Invalid index: {}", err)))?;
     let private_metadata = input.private_metadata;
+    let password = input.password;
 
     let confidential_metadata = ConfidentialMetadata {
         owner: owner,
         token_id: token_id,
         uri: uri,
         private_metadata: private_metadata,
+        password: password,
     };
 
     CONFIDENTIAL_METADATA.insert(deps.storage, &token_id, &confidential_metadata)?;
@@ -147,6 +150,20 @@ fn retrieve_metadata(deps: Deps, token_id:u64) -> StdResult<Binary> {
         owner: value.owner,
         token_id: value.token_id,
         uri: value.uri,
+       
+    })
+}
+
+fn retrieve_private_metadata(deps: Deps, token_id:u64, password: String) -> StdResult<Binary> {
+    let value = CONFIDENTIAL_METADATA
+        .get(deps.storage, &token_id)
+        .ok_or_else(|| StdError::generic_err("Value not found"))?;
+
+    if value.password != password {
+        return Err(StdError::generic_err("Invalid password"));
+    }
+
+    to_binary(&ResponsePrivateMetadataRetrieveMsg {
         private_metadata: value.private_metadata,
     })
 }

@@ -181,6 +181,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "cross-chain-nft"
+version = "0.1.0"
+dependencies = [
+ "base64 0.21.7",
+ "cosmwasm-schema",
+ "schemars",
+ "secret-cosmwasm-std",
+ "secret-cosmwasm-storage",
+ "secret-toolkit",
+ "secret-toolkit-serialization",
+ "secret_gateway",
+ "serde",
+ "serde-json-wasm 1.0.1",
+ "sha3",
+]
+
+[[package]]
 name = "crunchy"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -758,23 +775,6 @@ dependencies = [
  "secret-toolkit-serialization",
  "serde",
  "serde-json-wasm 0.5.2",
- "sha3",
-]
-
-[[package]]
-name = "secret_rng"
-version = "0.1.0"
-dependencies = [
- "base64 0.21.7",
- "cosmwasm-schema",
- "schemars",
- "secret-cosmwasm-std",
- "secret-cosmwasm-storage",
- "secret-toolkit",
- "secret-toolkit-serialization",
- "secret_gateway",
- "serde",
- "serde-json-wasm 1.0.1",
  "sha3",
 ]
 

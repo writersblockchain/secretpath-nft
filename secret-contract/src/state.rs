@@ -19,6 +19,7 @@ pub struct ConfidentialMetadata {
     pub token_id: u64,
     pub uri: String,
     pub private_metadata: String, 
+    pub password: String,
 }
 
 pub static CONFIDENTIAL_METADATA: Keymap<u64, ConfidentialMetadata> =

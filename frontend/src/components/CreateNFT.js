@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import OpenAI from "openai";
 import abi from "../abi/SecretNFT.json";
 import { ethers } from 'ethers';
@@ -23,19 +24,57 @@ import {
 } from "@blake.regalia/belt";
 import secretpath_abi from "../abi/abi.js";
 import { ClipLoader } from 'react-spinners';
+import Confetti from 'react-confetti';
+
 
 export default function CreateNFT() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [secretMessage, setSecretMessage] = useState("");
+  const [password, setPassword] = useState("");
   const [transactionHash, setTransactionHash] = useState('');
   const [image, setImage] = useState(null);
   const [compressedImage, setCompressedImage] = useState(null);
   const [uri, setUri] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentTokenId, setCurrentTokenId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [confetti, setConfetti] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false); 
 
   const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS; 
   const JWT = `Bearer ${process.env.REACT_APP_PINATA}`;
+
+  const openai = new OpenAI({
+    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+  });
+
+  useEffect(() => {
+    const fetchTokenId = async () => {
+      try {
+        if (!window.ethereum) {
+          console.error('MetaMask is not installed');
+          return;
+        }
+        await (window).ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xAA36A7' }], // chainId must be in hexadecimal numbers
+      });
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const contractABI = abi.abi;
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
+        const tokenId = await contract.totalSupply();
+        setCurrentTokenId(tokenId.toString());
+        console.log('Current token ID:', tokenId.toString());
+      } catch (error) {
+        console.error('Error fetching token ID:', error);
+      }
+    };
+    fetchTokenId();
+  }, []);
 
   const pinJSONToIPFS = async (name, description, compressedImage) => {
     const data = JSON.stringify({
@@ -49,7 +88,6 @@ export default function CreateNFT() {
         name: `${name}.json`
       }
     });
-
     try {
       const res = await axios.post("https://api.pinata.cloud/pinning/pinJSONToIPFS", data, {
         headers: {
@@ -60,7 +98,7 @@ export default function CreateNFT() {
       const ipfsHash = res.data.IpfsHash;
       setUri(ipfsHash.toString());
       console.log('Pinned JSON to IPFS:', res.data);
-      return ipfsHash; // Return the URI
+      return ipfsHash;
     } catch (error) {
       console.error('Error pinning JSON to IPFS:', error);
     }
@@ -73,14 +111,12 @@ export default function CreateNFT() {
         model: "dall-e-2",
         prompt: description,
         n: 1,
-        size: "256x256", // Requesting a smaller size
+        size: "256x256",
         response_format: "b64_json"
       });
       const imageData = response.data[0].b64_json;
       const imageUrl = `data:image/png;base64,${imageData}`;
       setImage(imageUrl);
-
-      // Compress the image
       const img = new Image();
       img.src = imageUrl;
       return new Promise((resolve, reject) => {
@@ -90,13 +126,13 @@ export default function CreateNFT() {
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-          // Adjust the quality parameter to control the level of compression
-          const compressedImageUrl = canvas.toDataURL('image/jpeg', 0.5); // 50% quality
+          const compressedImageUrl = canvas.toDataURL('image/jpeg', 0.5);
           setCompressedImage(compressedImageUrl);
           console.log('Compressed image:', compressedImageUrl);
-          resolve(compressedImageUrl);
           setLoading(false);
+          setShowModal(true);
+          setConfetti(true);
+          resolve(compressedImageUrl);
         };
         img.onerror = (error) => {
           console.error('Error loading image:', error);
@@ -111,42 +147,30 @@ export default function CreateNFT() {
   };
 
   const mint = async (uri) => {
-    // Check if MetaMask is installed
     if (!window.ethereum) {
-        alert('Please install MetaMask first!');
-        return;
+      alert('Please install MetaMask first!');
+      return;
     }
-
     try {
-        // Request account access if needed
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-
-        // Connect to your deployed contract
-        const contractABI = abi.abi;
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
-
-        let address = await signer.getAddress();
-
-        // Log the address and URI
-        console.log('Minting to address:', address);
-        console.log('With URI:', uri);
-
-        // Execute the mint function from the contract
-        const tx = await contract.safeMint(address, uri);
-        
-        await tx.wait();
-        setTransactionHash(tx.hash);
-        console.log(`Transaction hash: ${tx.hash}`);
-
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+      const contractABI = abi.abi;
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
+      let address = await signer.getAddress();
+      console.log('Minting to address:', address);
+      console.log('With URI:', uri);
+      const tx = await contract.safeMint(address, uri);
+      await tx.wait();
+      setTransactionHash(tx.hash);
+      console.log(`Transaction hash: ${tx.hash}`);
     } catch (error) {
-        console.error('Error minting NFT:', error);
-        alert('Failed to mint NFT!');
+      console.error('Error minting NFT:', error);
+      alert('Failed to mint NFT!');
     }
   };
 
-  const encrypt = async (e, token_id, uri, secretMessage ) => {
+  const encrypt = async (e, token_id, uri, secretMessage, password ) => {
     e.preventDefault();
 
     const iface = new ethers.utils.Interface(secretpath_abi);
@@ -179,6 +203,7 @@ export default function CreateNFT() {
          token_id: token_id,
             uri: uri,
          private_metadata: secretMessage, 
+         password: password
      
        });
 
@@ -186,7 +211,7 @@ export default function CreateNFT() {
 
     const callbackAddress = publicClientAddress.toLowerCase();
     console.log("callback address: ", callbackAddress);
-    console.log(data);
+    console.log("my data: ", data);
     console.log(callbackAddress);
 
     // Payload construction
@@ -266,14 +291,14 @@ export default function CreateNFT() {
 
   let handleSubmit = async (e) => {
     e.preventDefault();
-  
     try {
+      setButtonDisabled(true);
       const compressedImage = await generateAndCompressImage(description);
       if (compressedImage) {
         const uri = await pinJSONToIPFS(name, description, compressedImage);
         if (uri) {
           const mintPromise = mint(uri);
-          const encryptPromise = encrypt(e, "2", uri, secretMessage);
+          const encryptPromise = encrypt(e, currentTokenId, uri, secretMessage, password);
           await Promise.all([mintPromise, encryptPromise]);
         } else {
           console.error('URI is not defined');
@@ -283,12 +308,23 @@ export default function CreateNFT() {
       }
     } catch (error) {
       console.error('Error in the NFT creation process:', error);
+    } finally {
+      setTimeout(() => setButtonDisabled(false), 5000); // Re-enable the button after 5 seconds
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setConfetti(false);
+  };
+  let navigate = useNavigate();
+  const handleImageClick = () => {
+    navigate('/display');
+  };
+
   return (
-    <div className="flex flex-col full-height justify-start items-center px-6 lg:px-8 pt-4">
-      <div className="mt-20">
+    <div className="flex flex-col full-height justify-start items-center px-6 lg:px-8 ">
+      <div className="mt-8">
         <form onSubmit={handleSubmit} className="space-y-4" style={{ width: '360px' }}>
           <div className="text-white">Create NFT</div>
           <div className="border-4 rounded-lg p-4">
@@ -312,7 +348,7 @@ export default function CreateNFT() {
                 value={description}
                 input style={{ width: '320px' }}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Your NFT description here"
+                placeholder="prompt for AI to generate NFT image"
                 required
                 className="mt-2 block pl-2 rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
                 rows="4"
@@ -326,7 +362,21 @@ export default function CreateNFT() {
                 input style={{ width: '320px' }}
                 value={secretMessage}
                 onChange={(e) => setSecretMessage(e.target.value)}
-                placeholder="Your confidential message here"
+                placeholder="Your confidential message encrypted on Secret Network"
+                required
+                className="mt-2 block pl-2  rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                rows="4"
+              ></textarea>
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium leading-6 text-white">
+                NFT password
+              </label>
+              <textarea
+                input style={{ width: '320px' }}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password to reveal confidential message"
                 required
                 className="mt-2 block pl-2  rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
                 rows="4"
@@ -335,6 +385,7 @@ export default function CreateNFT() {
             <div className="flex justify-center mt-4">
               <button
                 type="submit"
+                disabled={buttonDisabled}
                 className="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Create NFT
@@ -342,14 +393,25 @@ export default function CreateNFT() {
             </div>
           </div>
         </form>
-        {loading ? (
+        {loading && (
           <div className="flex justify-center mt-4">
             <ClipLoader size={50} color={"#123abc"} loading={loading} />
           </div>
-        ) : (
-          compressedImage && <img src={compressedImage} alt="Compressed" />
         )}
       </div>
+
+      {showModal && (
+        <div
+        
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={handleCloseModal}
+        >
+          <div className="bg-white p-4 rounded-lg" onClick={handleImageClick}>
+            <img src={compressedImage} alt="NFT" className="w-full h-full object-contain" />
+          </div>
+          {confetti && <Confetti />}
+        </div>
+      )}
     </div>
   );
 }

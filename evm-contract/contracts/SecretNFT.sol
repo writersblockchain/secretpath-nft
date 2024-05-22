@@ -17,11 +17,11 @@ contract SecretNFT is ERC721, ERC721URIStorage, Ownable {
         return "";
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _nextTokenId++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-    }
+  function safeMint(address to, string memory uri) public {
+    uint256 tokenId = _nextTokenId++;
+    _safeMint(to, tokenId);
+    _setTokenURI(tokenId, uri);
+}
 
     function tokensOfOwner(address owner) external view returns (uint256[] memory) {
         uint256 tokenCount = balanceOf(owner);
@@ -48,6 +48,10 @@ contract SecretNFT is ERC721, ERC721URIStorage, Ownable {
             }
             return actualTokenIds;
         }
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return _nextTokenId;
     }
 
     // The following functions are overrides required by Solidity.

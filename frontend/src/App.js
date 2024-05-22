@@ -16,6 +16,14 @@ function App() {
           Cross-Chain NFT Demo
           <h6 className="text-xs hover:underline">
             <a
+              href="https://testnets.opensea.io/collection/secretnft-11"
+              rel="noopener noreferrer"
+            >
+              [click here to view NFTs on Opensea]
+            </a>
+          </h6>
+          <h6 className="text-xs hover:underline">
+            <a
               href="https://docs.scrt.network/secret-network-documentation/confidential-computing-layer/ethereum-evm-developer-toolkit/usecases/nfts"
               rel="noopener noreferrer"
             >

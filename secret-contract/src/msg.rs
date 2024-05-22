@@ -24,6 +24,7 @@ pub struct MetadataStoreMsg {
     pub token_id: String,
     pub uri: String,
     pub private_metadata: String, 
+    pub password: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -35,6 +36,7 @@ pub struct ResponseMsg {
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
     RetrieveMetadata { token_id: u64},
+    RetrievePrivateMetadata { token_id: u64, password: String},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -42,7 +44,11 @@ pub struct ResponseMetadataRetrieveMsg {
     pub owner: String,
     pub token_id: u64,
     pub uri: String,
-    pub private_metadata: String, 
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct ResponsePrivateMetadataRetrieveMsg {
+    pub private_metadata: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

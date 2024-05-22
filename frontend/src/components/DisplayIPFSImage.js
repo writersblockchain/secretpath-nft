@@ -9,6 +9,7 @@ export default function DisplayIPFSImage({ ipfsHash }) {
       try {
         const response = await axios.get(`https://ipfs.io/ipfs/${ipfsHash}`);
         const data = response.data;
+       
         if (data.image) {
           setImageData(data.image);
         } else {
@@ -27,7 +28,10 @@ export default function DisplayIPFSImage({ ipfsHash }) {
   return (
     <div>
       {imageData ? (
+       
+       
         <img src={imageData} alt="IPFS Image" style={{ maxWidth: '100%' }} />
+      
       ) : (
         <p>Loading image...</p>
       )}
