@@ -1,4 +1,4 @@
-npx hardhat run scripts/deployNFT.js --network sepolia
+npx hardhat run scripts/deployNFT.js --network amoy
 
 npx hardhat run scripts/mint.js --network sepolia
 
