@@ -25,7 +25,7 @@ import {
 import secretpath_abi from "../abi/abi.js";
 import { ClipLoader } from 'react-spinners';
 import Confetti from 'react-confetti';
-
+// import { PinataSDK } from "pinata-web3";
 
 export default function CreateNFT() {
   const [name, setName] = useState("");
@@ -43,7 +43,14 @@ export default function CreateNFT() {
   const [buttonDisabled, setButtonDisabled] = useState(false); 
 
   const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS; 
-  const JWT = `Bearer ${process.env.REACT_APP_PINATA}`;
+  const JWT = `Bearer ${process.env.REACT_APP_PINATA_JWT}`;
+
+  // const pinata = new PinataSDK({
+  //   pinataJwt: JWT,
+  //   pinataGateway: "",
+  // });
+
+  // console.log('Pinata:', pinata);
 
   const openai = new OpenAI({
     apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -57,10 +64,10 @@ export default function CreateNFT() {
           console.error('MetaMask is not installed');
           return;
         }
-      //   await (window).ethereum.request({
-      //     method: 'wallet_switchEthereumChain',
-      //     params: [{ chainId: '0xAA36A7' }], // chainId must be in hexadecimal numbers
-      // });
+        await (window).ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xAA36A7' }], // chainId must be in hexadecimal numbers
+      });
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
@@ -208,7 +215,7 @@ export default function CreateNFT() {
      
        });
 
-    let publicClientAddress = "0x8EaAB5e8551781F3E8eb745E7fcc7DAeEFd27b1f";
+    let publicClientAddress = "0x3879E146140b627a5C858a08e507B171D9E43139";
 
     const callbackAddress = publicClientAddress.toLowerCase();
     console.log("callback address: ", callbackAddress);
@@ -277,10 +284,9 @@ export default function CreateNFT() {
       maxFeePerGas && maxPriorityFeePerGas
         ? maxFeePerGas.add(maxPriorityFeePerGas)
         : await provider.getGasPrice();
-  
+        let amountOfGas; 
         let my_gas = 150000;
-      
-         let amountOfGas = gasFee.mul(callbackGasLimit).mul(100).div(2);
+        amountOfGas = gasFee.mul(callbackGasLimit).mul(3).div(2);
   
         const tx_params = {
           gas: hexlify(my_gas),

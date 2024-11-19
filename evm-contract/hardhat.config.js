@@ -13,8 +13,8 @@ module.exports = {
     },
   },
   networks: {
-    amoy: {
-      url: `https://polygon-amoy.infura.io/v3/${process.env.INFURA_KEY}`,
+    sepolia: {
+      url: `https://sepolia.infura.io/v3/${process.env.INFURA_KEY}`,
       accounts: [process.env.PRIVATE_KEY],
     },
   },
