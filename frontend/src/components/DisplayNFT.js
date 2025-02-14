@@ -45,7 +45,7 @@ export default function DisplayNFT() {
     useEffect(() => {
         const fetchData = async () => {
             const secretjs = new SecretNetworkClient({
-                url: "https://lcd.testnet.secretsaturn.net",
+                url: "https://pulsar.lcd.secretnodes.com",
                 chainId: "pulsar-3",
             });
 
@@ -81,7 +81,7 @@ export default function DisplayNFT() {
 
     const queryPrivateMetadata = async (tokenId, password) => {
         const secretjs = new SecretNetworkClient({
-            url: "https://lcd.testnet.secretsaturn.net",
+            url: "https://pulsar.lcd.secretnodes.com",
             chainId: "pulsar-3",
         });
 
